@@ -171,12 +171,12 @@ public class DefaultConfig {
         BlockStore blockStore = appCtx.getBean(BlockStore.class);
         int uncleListLimit = RskSystemProperties.RSKCONFIG.getBlockchainConfig().getCommonConstants().getUNCLE_LIST_LIMIT();
         int uncleGenLimit = RskSystemProperties.RSKCONFIG.getBlockchainConfig().getCommonConstants().getUNCLE_GENERATION_LIMIT();
-
-        BlockParentGasLimitRule parentGasLimitRule = new BlockParentGasLimitRule(RskSystemProperties.CONFIG.getBlockchainConfig().getCommonConstants().getGAS_LIMIT_BOUND_DIVISOR());
-        BlockParentCompositeRule unclesBlockParentHeaderValidator = new BlockParentCompositeRule(new PrevMinGasPriceRule(), new BlockParentNumberRule(), new BlockDifficultyRule(), parentGasLimitRule);
-
         int validPeriod = RskSystemProperties.RSKCONFIG.getBlockchainConfig().getCommonConstants().getNewBlockMaxMinInTheFuture();
         BlockTimeStampValidationRule blockTimeStampValidationRule = new BlockTimeStampValidationRule(validPeriod);
+
+        BlockParentGasLimitRule parentGasLimitRule = new BlockParentGasLimitRule(RskSystemProperties.CONFIG.getBlockchainConfig().getCommonConstants().getGAS_LIMIT_BOUND_DIVISOR());
+        BlockParentCompositeRule unclesBlockParentHeaderValidator = new BlockParentCompositeRule(new PrevMinGasPriceRule(), new BlockParentNumberRule(), blockTimeStampValidationRule, new BlockDifficultyRule(), parentGasLimitRule);
+
         BlockCompositeRule unclesBlockHeaderValidator = new BlockCompositeRule(new ProofOfWorkRule(), blockTimeStampValidationRule, new ValidGasUsedRule());
 
         BlockUnclesValidationRule blockUnclesValidationRule = new BlockUnclesValidationRule(blockStore, uncleListLimit, uncleGenLimit, unclesBlockHeaderValidator, unclesBlockParentHeaderValidator);
